@@ -1,8 +1,11 @@
 import os
 from datetime import datetime
 from underground import SubwayFeed
+from dotenv import load_dotenv
 
-API_KEY = os.getenv('MTA_API_KEY')
+load_dotenv()
+
+API_KEY = os.environ.get("MTA_API_KEY")
 ROUTE = 'Q'
 feed = SubwayFeed.get(ROUTE, api_key=API_KEY)
 

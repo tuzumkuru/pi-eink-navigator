@@ -8,6 +8,7 @@ idna==3.4
 protobuf==3.20.3
 protobuf3-to-dict==0.1.5
 pydantic==1.9.2
+python-dotenv==1.0.0
 pytz==2023.3.post1
 requests==2.31.0
 six==1.16.0
