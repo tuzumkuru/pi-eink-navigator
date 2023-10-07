@@ -1,0 +1,17 @@
+beautifulsoup4==4.12.2
+certifi==2023.7.22
+charset-normalizer==3.3.0
+click==7.1.2
+google==2.0.3
+gtfs-realtime-bindings==0.0.6
+idna==3.4
+protobuf==3.20.3
+protobuf3-to-dict==0.1.5
+pydantic==1.9.2
+pytz==2023.3.post1
+requests==2.31.0
+six==1.16.0
+soupsieve==2.5
+typing_extensions==4.8.0
+underground==0.3.3
+urllib3==2.0.6
