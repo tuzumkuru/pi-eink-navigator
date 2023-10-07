@@ -6,11 +6,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_KEY = os.environ.get("MTA_API_KEY")
+
 ROUTE = 'Q'
 feed = SubwayFeed.get(ROUTE, api_key=API_KEY)
 
-# request will read from $MTA_API_KEY if a key is not provided
-feed = SubwayFeed.get(ROUTE)
 
 your_dict = feed.extract_stop_dict()
 
