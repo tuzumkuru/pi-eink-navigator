@@ -1,3 +1,4 @@
+# main.py
 import time
 import board
 import busio
@@ -6,11 +7,11 @@ from screen1 import Screen1
 from screen2 import Screen2
 from controller import ScreenController
 from adafruit_epd.ssd1680 import Adafruit_SSD1680
-from screen_photo import ScreenPhoto
+from screen_photo import PhotoScreen
 
 if __name__ == "__main__":
-    button1_pin = 5  # Update with the actual GPIO pin number for your button 1
-    button2_pin = 6  # Update with the actual GPIO pin number for your button 2
+    button1_pin = 6 
+    button2_pin = 5 
 
     spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
     ecs = digitalio.DigitalInOut(board.CE0)
@@ -20,10 +21,14 @@ if __name__ == "__main__":
 
     display = Adafruit_SSD1680(122, 250, spi, cs_pin=ecs, dc_pin=dc, sramcs_pin=None, rst_pin=rst, busy_pin=busy)
 
-    screen1 = ScreenPhoto("./1.png")
-    screen2 = ScreenPhoto("./2.png")
-    screen3 = ScreenPhoto("./3.jpg")
-    screens = [screen1, screen2, screen3]
+    # Set the display rotation to 270 degrees
+    display.rotation = 3
+
+    screen1 = PhotoScreen("./1.png")
+    screen2 = PhotoScreen("./2.png")
+    screen3 = PhotoScreen("./3.jpg")
+    screen4 = Screen1()
+    screens = [screen1, screen2, screen3, screen4]
 
     controller = ScreenController(screens, display, button1_pin, button2_pin)
 
@@ -31,4 +36,4 @@ if __name__ == "__main__":
         while True:
             time.sleep(1)  # You can add any other main program logic here
     finally:
-        print("Exiting")  # Cleanup GPIO when the program exits
+        print("Exiting") 
