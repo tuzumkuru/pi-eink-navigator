@@ -1,15 +1,19 @@
+# photo_screen.py
+from screen_base import ScreenBase
 from PIL import Image
 
-class ScreenPhoto:
+class PhotoScreen(ScreenBase):
     def __init__(self, image_url):
-        self.image = Image.open(image_url).convert("1").convert("L")
-        self.active = False
+        super().__init__()
+        self.image = Image.open(image_url)
 
-    def render(self):
-        return self.image
+    def get_image(self):
+        return self.image.copy()
 
     def activate(self):
-        self.active = True
+        super().activate()
+        # Additional activation logic specific to PhotoScreen, if needed
 
     def deactivate(self):
-        self.active = False
+        super().deactivate()
+        # Additional deactivation logic specific to PhotoScreen, if needed
