@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_KEY = os.environ.get("MTA_API_KEY")
-
+print(API_KEY)
 ROUTE = 'Q'
 feed = SubwayFeed.get(ROUTE, api_key=API_KEY)
 
