@@ -1,13 +1,18 @@
 # main.py
+import os
 import time
 import board
 import busio
 import digitalio
+from mta_screen import MTAScreen
 from screen1 import Screen1
 from screen2 import Screen2
 from controller import ScreenController
 from adafruit_epd.ssd1680 import Adafruit_SSD1680
 from photo_screen import PhotoScreen
+from weather_screen import WeatherScreen
+from dotenv import load_dotenv
+load_dotenv()
 
 if __name__ == "__main__":
     button_prev_pin = 6 
@@ -23,12 +28,11 @@ if __name__ == "__main__":
     # Set the display rotation to 270 degrees
     display.rotation = 3
 
+    # Create screens list to be navigated in the controller
     screens = []
-    screens.append(PhotoScreen("./1.png"))
-    screens.append(PhotoScreen("./2.png"))
-    screens.append(PhotoScreen("./3.jpg"))
-    screens.append(Screen1())
-    screens.append(Screen2())
+    screens.append(PhotoScreen("./mountain.jpg"))
+    screens.append(MTAScreen(os.environ.get("MTA_API_KEY"),'Q','D27N'))
+    screens.append(WeatherScreen(os.environ.get("OPEN_WEATHER_TOKEN"),"Brooklyn, US",am_pm=False,unit="B"))
 
     controller = ScreenController(screens, display, button_prev_pin, button_next_pin)
 
