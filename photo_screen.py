@@ -1,4 +1,3 @@
-# photo_screen.py
 from screen_base import ScreenBase
 from PIL import Image
 
