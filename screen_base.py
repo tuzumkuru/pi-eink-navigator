@@ -1,4 +1,3 @@
-# screen_base.py
 from abc import ABC, abstractmethod
 
 class ScreenBase(ABC):
