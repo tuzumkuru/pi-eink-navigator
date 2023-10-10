@@ -53,7 +53,6 @@ class MTAScreen(ScreenBase):
         if(self.image == None):
             self.update_image()
         return self.image #ImageOps.invert(self.image)
-        
     
     def update_image(self):
         WHITE = (255, 255, 255)  # Color constant
@@ -122,14 +121,11 @@ class MTAScreen(ScreenBase):
             text_x = circle_position[0] * 2  # Center the text horizontally
             draw.text((text_x, remaining_times_y), remaining_time_str, font=self.clock_font, fill=BLACK)
 
-            remaining_times_y += text_height  # Move the Y position down
-
-        
+            remaining_times_y += text_height  # Move the Y position down       
 
         # Save the image to a file
         self.image = image
         image.save("test.png")
-
 
     def update_time(self):
         now = datetime.now()
@@ -152,7 +148,6 @@ class MTAScreen(ScreenBase):
             # Extract remaining minutes as an integer
             remaining_minutes = int(time_difference.total_seconds() / 60)
             remaining_minutes_list.append(remaining_minutes)
-
         self.remaining_minutes_list = remaining_minutes_list
         self.date_time_list = date_time_list
         self._last_datetime_refresh = time.monotonic()
@@ -169,18 +164,26 @@ class MTAScreen(ScreenBase):
         self.active = False
         if self.process_thread:
             self.process_thread.join()  # Wait for the process to finish
+        self.image=None # clear the image to avoid double change at activate
 
     def run(self):
         while self.active:
-            print("mta running")
-            if (not self._last_datetime_refresh) or (time.monotonic() - self._last_datetime_refresh) > 30:
-                self.update_list()
+            info_change = False
 
-            now = datetime.now()
+            if (not self._last_datetime_refresh) or (time.monotonic() - self._last_datetime_refresh) > 30:
+                old_date_time_list = self.date_time_list
+                self.update_list()
+                if(self.date_time_list != old_date_time_list):
+                    info_change = True
+            
+
             old_time_text = self._time_text
-            self.update_time()            
-            if(old_time_text != self._time_text):
+            self.update_time()
+            if old_time_text != self._time_text:
+                info_change = True
+            
+            if info_change:
                 self.update_image()
-                self.notify_change()         
+                self.notify_change()
                    
             time.sleep(1)

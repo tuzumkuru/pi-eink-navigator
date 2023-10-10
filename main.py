@@ -5,8 +5,6 @@ import board
 import busio
 import digitalio
 from mta_screen import MTAScreen
-from screen1 import Screen1
-from screen2 import Screen2
 from controller import ScreenController
 from adafruit_epd.ssd1680 import Adafruit_SSD1680
 from photo_screen import PhotoScreen

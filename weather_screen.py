@@ -202,12 +202,10 @@ class WeatherScreen(ScreenBase):
 
     def run(self):
         while self.active:
-            print("weather running")
-            if (not self._last_weather_refresh) or (time.monotonic() - self._last_weather_refresh) > 600:
+            if (not self._last_weather_refresh) or (time.monotonic() - self._last_weather_refresh) > 300:
                 self.update_weather()
 
-            now = datetime.now()
-            old_time_text = self._time_text
+            old_time_text = self._time_text            
             self.update_time()            
             if(old_time_text != self._time_text):
                 self.update_image()
