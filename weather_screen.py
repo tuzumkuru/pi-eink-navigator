@@ -199,6 +199,7 @@ class WeatherScreen(ScreenBase):
         self.active = False
         if self.process_thread:
             self.process_thread.join()  # Wait for the process to finish
+        self.image=None # clear the image to avoid double change at activate
 
     def run(self):
         while self.active:
