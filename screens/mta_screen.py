@@ -41,16 +41,14 @@ class MTAScreen(ScreenBase):
 
         self.process_thread = None
 
-        self.update_time()
-        self.update_list()
-        self.update_image()
-
     def __del__(self):
         self.deactivate()
 
     def get_image(self):
         # This method returns the image to be displayed on the screen
         if(self.image == None):
+            self.update_time()
+            self.update_list()
             self.update_image()
         return self.image #ImageOps.invert(self.image)
     
@@ -173,7 +171,7 @@ class MTAScreen(ScreenBase):
             if (not self._last_datetime_refresh) or (time.monotonic() - self._last_datetime_refresh) > 30:
                 old_date_time_list = self.date_time_list
                 self.update_list()                
-                if(set(self.date_time_list) == set(old_date_time_list)):
+                if(old_date_time_list != None and set(self.date_time_list) == set(old_date_time_list)):
                     info_change = True            
 
             old_time_text = self._time_text

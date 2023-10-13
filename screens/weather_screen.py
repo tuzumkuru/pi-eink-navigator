@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 import json
 import threading
@@ -11,7 +12,7 @@ from utils import get_text_size
 small_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 16)
 medium_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
 large_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 24)
-icon_font = ImageFont.truetype("./meteocons.ttf", 48)
+icon_font = ImageFont.truetype(os.path.join(os.path.dirname(__file__), "meteocons.ttf"), 48)
 
 DATA_SOURCE_URL = "http://api.openweathermap.org/data/2.5/weather"
 
@@ -73,16 +74,14 @@ class WeatherScreen(ScreenBase):
 
         self.process_thread = None
 
-        self.update_time()
-        self.update_weather()
-        self.update_image()
-
     def __del__(self):
         self.deactivate()
 
     def get_image(self):
         # This method returns the image to be displayed on the screen
         if(self.image == None):
+            self.update_time()
+            self.update_weather()
             self.update_image()
         return ImageOps.invert(self.image)
         
