@@ -45,6 +45,16 @@ Before running the project, you will need the following:
 
 3. You can access the project's code in the project directory. Customize the screens and functionality to your needs.
 
+## Screenshots
+
+Here are some screenshots of the project in action:
+
+![Raspberry Pi with E-Ink Screen](files/image_on_rpi.png)
+
+![MTA Screen](files/image_mta_screen.png)
+
+![Weather Screen](files/image_weather_screen.png)
+
 ## Uninstallation
 
 If you want to remove the service:
