@@ -25,17 +25,17 @@ class MTAScreen(ScreenBase):
         self.route = route
         self.stop = stop
 
-        self._last_datetime_refresh = None
-        self.remaining_minutes_list = None
-        self.date_time_list = None
-
         self.width = width
         self.height = height
-        
+
         # Define fonts
         self.stop_name_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16)
         self.metro_line_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 48)
-        self.clock_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 16)  
+        self.clock_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 16)
+
+        self._last_list_update = None
+        self.remaining_minutes_list = None
+        self.departure_time_list = None
 
         self.image = None
 
@@ -46,11 +46,10 @@ class MTAScreen(ScreenBase):
 
     def get_image(self):
         # This method returns the image to be displayed on the screen
-        if(self.image == None):
-            self.update_time()
+        if(self.image == None): # for the first run
             self.update_list()
             self.update_image()
-        return self.image #ImageOps.invert(self.image)
+        return self.image
     
     def update_image(self):
         WHITE = (255, 255, 255)  # Color constant
@@ -65,40 +64,40 @@ class MTAScreen(ScreenBase):
         bar_height = 30
         bar_color = BLACK
         bar_position = (0, 0)
-        stop_name = self.stop  # Replace with your stop name
+        stop_name = self.stop  # TODO: Replace with your stop name instead of stop code
 
         draw.rectangle([bar_position, (bar_position[0] + bar_width, bar_position[1] + bar_height)], fill=bar_color, outline=None)
 
-        # Calculate the position for the clock
-        current_time = datetime.now(self.date_time_list[0].tzinfo)  # Use the timezone from the first datetime object
+        # Calculate the position for the stop name on the left
+        stop_position_left = (bar_position[0] + 5, bar_position[1] + (bar_height - get_text_size(stop_name, font=stop_name_font)[1]) // 2)
+
+        # Calculate the position for the clock on the right
+        current_time = datetime.now(self.departure_time_list[0].tzinfo)  # Use the timezone from the first datetime object
         current_time_str = current_time.strftime("%I:%M %p")  # Format time in 12-hour format
         clock_width, clock_height = get_text_size(current_time_str, font=clock_font)
-        clock_position = (bar_position[0] + self.width - clock_width - 2, bar_position[1] + (bar_height - clock_height) // 2)
-
-        # Calculate the position for the stop name on the left
-        text_position_left = (bar_position[0] + 5, bar_position[1] + (bar_height - get_text_size(stop_name, font=stop_name_font)[1]) // 2)
+        clock_position = (bar_position[0] + self.width - clock_width - 2, bar_position[1] + (bar_height - clock_height) // 2)        
         
-        # Draw the clock and stop name
+        # Draw the clock and stop name        
+        draw.text(stop_position_left, stop_name, font=self.stop_name_font, fill=WHITE)
         draw.text(clock_position, current_time_str, font=self.clock_font, fill=WHITE)
-        draw.text(text_position_left, stop_name, font=self.stop_name_font, fill=WHITE)
 
         # Metro line in a filled circle
         circle_radius = 36
-        circle_color = BLACK  # Red color (you can choose your desired color)
-        circle_position = (circle_radius + 10, (self.height - bar_height) // 2 + bar_height)
-        metro_line = self.route  # Replace with your metro line information
+        circle_color = BLACK 
+        circle_position = (circle_radius + 10, (self.height - bar_height) // 2 + bar_height)        
 
         draw.ellipse([(circle_position[0] - circle_radius, circle_position[1] - circle_radius),
                     (circle_position[0] + circle_radius, circle_position[1] + circle_radius)],
                     fill=circle_color, outline=None)
 
         # Use get_text_size to calculate text size
+        metro_line = self.route
         text_width, text_height = get_text_size(metro_line, font=metro_line_font)
         text_position = (circle_position[0] - text_width // 2, circle_position[1] - text_height // 2)
         draw.text(text_position, metro_line, font=self.metro_line_font, fill=WHITE)
 
-        # List of datetime objects representing train departure times
-        departure_times = self.date_time_list
+        # Sort the list of datetime objects representing train departure times
+        departure_times = sorted(self.departure_time_list)  
 
         # Calculate the remaining times and print in the desired format
         remaining_times_y = bar_position[1] + bar_height + 10
@@ -121,14 +120,7 @@ class MTAScreen(ScreenBase):
 
             remaining_times_y += text_height  # Move the Y position down       
 
-        # Save the image to a file
         self.image = image
-        image.save("test.png")
-
-    def update_time(self):
-        now = datetime.now()
-        self._time_text = now.strftime("%I:%M %p").lstrip("0").replace(" 0", " ")
-
 
     def update_list(self):
         feed = SubwayFeed.get(self.route, api_key=self.api_token)
@@ -147,12 +139,13 @@ class MTAScreen(ScreenBase):
             remaining_minutes = int(time_difference.total_seconds() / 60)
             remaining_minutes_list.append(remaining_minutes)
         self.remaining_minutes_list = remaining_minutes_list
-        self.date_time_list = date_time_list
-        self._last_datetime_refresh = time.monotonic()
+        self.departure_time_list = date_time_list
+        self._last_list_update = time.monotonic()
 
     def activate(self):
         super().activate()
         self.active = True
+        self.get_image()
         self.process_thread = threading.Thread(target=self.run)
         self.process_thread.daemon = True
         self.process_thread.start()
@@ -168,15 +161,13 @@ class MTAScreen(ScreenBase):
         while self.active:
             info_change = False
 
-            if (not self._last_datetime_refresh) or (time.monotonic() - self._last_datetime_refresh) > 30:
-                old_date_time_list = self.date_time_list
-                self.update_list()                
-                if(old_date_time_list != None and set(self.date_time_list) == set(old_date_time_list)):
+            if (not self._last_list_update) or (time.monotonic() - self._last_list_update) > 15:
+                old_date_time_list = self.departure_time_list
+                self.update_list()
+                if(old_date_time_list != None and set(self.departure_time_list) == set(old_date_time_list)):
                     info_change = True            
-
-            old_time_text = self._time_text
-            self.update_time()
-            if old_time_text != self._time_text:
+            
+            if time.localtime().tm_sec == 0:
                 info_change = True
 
             if info_change:
