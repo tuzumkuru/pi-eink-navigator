@@ -3,11 +3,11 @@ import time
 import board
 import busio
 import digitalio
-from mta_screen import MTAScreen
+from screens.mta_screen import MTAScreen
 from controller import ScreenController
 from adafruit_epd.ssd1680 import Adafruit_SSD1680
-from photo_screen import PhotoScreen
-from weather_screen import WeatherScreen
+from screens.photo_screen import PhotoScreen
+from screens.weather_screen import WeatherScreen
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     # Create screens list to be navigated in the controller
     screens = []
-    screens.append(PhotoScreen("./mountain.jpg"))
+    screens.append(PhotoScreen("./files/mountain.jpg"))
     screens.append(MTAScreen(os.environ.get("MTA_API_KEY"),'Q','D27N'))
     screens.append(WeatherScreen(os.environ.get("OPEN_WEATHER_TOKEN"),"Brooklyn, US",am_pm=False,unit="B"))
 
