@@ -172,16 +172,15 @@ class MTAScreen(ScreenBase):
 
             if (not self._last_datetime_refresh) or (time.monotonic() - self._last_datetime_refresh) > 30:
                 old_date_time_list = self.date_time_list
-                self.update_list()
-                if(self.date_time_list != old_date_time_list):
-                    info_change = True
-            
+                self.update_list()                
+                if(set(self.date_time_list) == set(old_date_time_list)):
+                    info_change = True            
 
             old_time_text = self._time_text
             self.update_time()
             if old_time_text != self._time_text:
                 info_change = True
-            
+
             if info_change:
                 self.update_image()
                 self.notify_change()

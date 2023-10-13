@@ -28,8 +28,8 @@ if __name__ == "__main__":
     # Create screens list to be navigated in the controller
     screens = []
     screens.append(PhotoScreen("./mountain.jpg"))
-    screens.append(MTAScreen(os.environ.get("MTA_API_KEY"),'Q','D27N'))
-    screens.append(WeatherScreen(os.environ.get("OPEN_WEATHER_TOKEN"),"Brooklyn, US",am_pm=False,unit="B"))
+    screens.append(MTAScreen(os.environ.get("MTA_API_KEY"),os.environ.get("MTA_TRAIN_LINE"),os.environ.get("MTA_TRAIN_STOP")))
+    screens.append(WeatherScreen(os.environ.get("OPEN_WEATHER_TOKEN"),os.environ.get("OPEN_WEATHER_CITY"),am_pm=False,unit="B"))
 
     controller = ScreenController(screens, display, button_prev_pin, button_next_pin)
 
