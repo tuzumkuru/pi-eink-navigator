@@ -1,0 +1,18 @@
+version: '3'
+services:
+  pi-eink-navigator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pi-eink-navigator
+    env_file:
+      - path: .env
+        required: false
+    # environment:
+      # MTA_TRAIN_LINE: Q
+      # Uncomment and set these variables if needed
+      # MTA_API_KEY: YOUR_MTA_API_KEY
+      # MTA_TRAIN_STOP: D27N
+      # OPEN_WEATHER_TOKEN: YOUR_OPEN_WEATHER_TOKEN
+      # OPEN_WEATHER_CITY: Brooklyn, US
+    privileged: true
